@@ -74,10 +74,10 @@ export default function AddClothingScreen() {
       items.push(newItem);
       await AsyncStorage.setItem(CLOTHING_STORAGE_KEY, JSON.stringify(items));
 
-      router.replace('/wardrobe');
+      router.replace('/screens/wardrobe');
     } catch (error) {
       console.error('Error saving item:', error);
-      router.replace('/wardrobe');
+      router.replace('/screens/wardrobe');
     }
   };
 

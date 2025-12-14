@@ -49,7 +49,7 @@ export default function VibesScreen() {
     <View className="flex-1 bg-[#f8f8f8]">
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 pt-14 pb-3">
-        <TouchableOpacity className="p-2" onPress={() => router.push('/wardrobe')}>
+        <TouchableOpacity className="p-2" onPress={() => router.push('/screens/wardrobe')}>
           <Text className="text-3xl text-[#1a1a1a]">‹</Text>
         </TouchableOpacity>
         <Text className="text-lg font-semibold text-[#1a1a1a]">Today's Vibes</Text>

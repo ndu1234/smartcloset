@@ -80,7 +80,7 @@ export default function WardrobeScreen() {
     <View className="bg-[#f8f8f8]">
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 pt-14 pb-3">
-        <TouchableOpacity className="p-2" onPress={() => router.push('/add-clothing')}>
+        <TouchableOpacity className="p-2" onPress={() => router.push('/screens/add-clothing')}>
           <Text className="text-3xl text-[#1a1a1a]">‹</Text>
         </TouchableOpacity>
         <Text className="text-lg font-semibold text-[#1a1a1a]">Closet</Text>
@@ -118,7 +118,7 @@ export default function WardrobeScreen() {
             <Text className="text-gray-500 mb-6">Add some clothes to your closet</Text>
             <TouchableOpacity
               className="bg-[#1a1a1a] px-8 py-3 rounded-full"
-              onPress={() => router.push('/add-clothing')}
+              onPress={() => router.push('/screens/add-clothing')}
             >
               <Text className="text-white font-semibold">+ Add Item</Text>
             </TouchableOpacity>

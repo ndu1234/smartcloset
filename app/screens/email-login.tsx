@@ -14,21 +14,21 @@ export default function EmailLoginScreen() {
     if (email.trim()) {
       try {
         await AsyncStorage.setItem(USER_STORAGE_KEY, email);
-        router.replace('/add-clothing');
+        router.replace('/screens/add-clothing');
       } catch (error) {
         console.error('Error saving user:', error);
-        router.replace('/add-clothing');
+        router.replace('/screens/add-clothing');
       }
     }
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-[#f8f8f8]"
     >
-      <ScrollView 
-        className="flex-1" 
+      <ScrollView
+        className="flex-1"
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardDismissMode="on-drag"
       >

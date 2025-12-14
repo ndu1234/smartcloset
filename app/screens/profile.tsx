@@ -47,7 +47,7 @@ export default function ProfileScreen() {
     <View className="flex-1 bg-[#f8f8f8]">
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 pt-14 pb-3">
-        <TouchableOpacity className="p-2" onPress={() => router.push('/wardrobe')}>
+        <TouchableOpacity className="p-2" onPress={() => router.push('/screens/wardrobe')}>
           <Text className="text-3xl text-[#1a1a1a]">‹</Text>
         </TouchableOpacity>
         <Text className="text-lg font-semibold text-[#1a1a1a]">Profile</Text>
@@ -104,7 +104,7 @@ export default function ProfileScreen() {
       {/* Floating Add Button */}
       <TouchableOpacity
         className="absolute bottom-28 right-6 w-14 h-14 rounded-full bg-[#4CAF50] justify-center items-center shadow-lg"
-        onPress={() => router.push('/add-clothing')}
+        onPress={() => router.push('/screens/add-clothing')}
       >
         <Text className="text-white text-2xl">+</Text>
       </TouchableOpacity>

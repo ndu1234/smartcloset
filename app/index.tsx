@@ -29,7 +29,7 @@ export default function LoginScreen() {
       <View className="px-6 pb-12">
         <TouchableOpacity
           className="bg-[#1a1a1a] py-4 rounded-full mb-4"
-          onPress={() => router.push('/email-login')}
+          onPress={() => router.push('/screens/email-login')}
         >
           <Text className="text-white text-center text-lg font-semibold">
             Sign in with Email
