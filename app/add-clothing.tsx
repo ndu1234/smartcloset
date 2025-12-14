@@ -62,7 +62,7 @@ export default function AddClothingScreen() {
     try {
       const existingItems = await AsyncStorage.getItem(CLOTHING_STORAGE_KEY);
       const items = existingItems ? JSON.parse(existingItems) : [];
-      
+
       const newItem = {
         id: Date.now(),
         name: itemName,
@@ -70,10 +70,10 @@ export default function AddClothingScreen() {
         category: selectedCategory,
         style: selectedStyle,
       };
-      
+
       items.push(newItem);
       await AsyncStorage.setItem(CLOTHING_STORAGE_KEY, JSON.stringify(items));
-      
+
       router.replace('/wardrobe');
     } catch (error) {
       console.error('Error saving item:', error);
@@ -112,13 +112,13 @@ export default function AddClothingScreen() {
 
         {/* Camera/Gallery Buttons */}
         <View className="flex-row gap-3 mb-6">
-          <TouchableOpacity 
+          <TouchableOpacity
             className="flex-1 bg-white border border-gray-200 py-3 rounded-xl"
             onPress={takePhoto}
           >
             <Text className="text-center text-[#1a1a1a]">📸 Camera</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             className="flex-1 bg-white border border-gray-200 py-3 rounded-xl"
             onPress={pickImage}
           >
@@ -142,11 +142,10 @@ export default function AddClothingScreen() {
           {categories.map((cat) => (
             <TouchableOpacity
               key={cat}
-              className={`px-4 py-2 rounded-full border ${
-                selectedCategory === cat 
-                  ? 'bg-[#1a1a1a] border-[#1a1a1a]' 
-                  : 'bg-white border-gray-200'
-              }`}
+              className={`px-4 py-2 rounded-full border ${selectedCategory === cat
+                ? 'bg-[#1a1a1a] border-[#1a1a1a]'
+                : 'bg-white border-gray-200'
+                }`}
               onPress={() => setSelectedCategory(cat)}
             >
               <Text className={selectedCategory === cat ? 'text-white' : 'text-[#1a1a1a]'}>
@@ -162,11 +161,10 @@ export default function AddClothingScreen() {
           {styles.map((style) => (
             <TouchableOpacity
               key={style}
-              className={`px-4 py-2 rounded-full border ${
-                selectedStyle === style 
-                  ? 'bg-[#1a1a1a] border-[#1a1a1a]' 
-                  : 'bg-white border-gray-200'
-              }`}
+              className={`px-4 py-2 rounded-full border ${selectedStyle === style
+                ? 'bg-[#1a1a1a] border-[#1a1a1a]'
+                : 'bg-white border-gray-200'
+                }`}
               onPress={() => setSelectedStyle(style)}
             >
               <Text className={selectedStyle === style ? 'text-white' : 'text-[#1a1a1a]'}>
@@ -176,26 +174,6 @@ export default function AddClothingScreen() {
           ))}
         </View>
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View className="flex-row justify-around items-center py-3 pb-7 bg-white border-t border-gray-200">
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/wardrobe')}>
-          <Text className="text-2xl mb-1">👕</Text>
-          <Text className="text-xs text-gray-500">Closet</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/vibes')}>
-          <Text className="text-2xl mb-1">✨</Text>
-          <Text className="text-xs text-gray-500">Vibes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/explore')}>
-          <Text className="text-2xl mb-1">🔍</Text>
-          <Text className="text-xs text-gray-500">Explore</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/profile')}>
-          <Text className="text-2xl mb-1">👤</Text>
-          <Text className="text-xs text-gray-500">Profile</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }

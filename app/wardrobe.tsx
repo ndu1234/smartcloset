@@ -141,26 +141,6 @@ export default function WardrobeScreen() {
         )}
       </ScrollView>
 
-      {/* Bottom Navigation */}
-      <View className="absolute bottom-0 left-0 right-0 flex-row justify-around items-center py-3 pb-7 bg-white border-t border-gray-200">
-        <TouchableOpacity className="items-center p-2">
-          <Text className="text-2xl mb-1">👕</Text>
-          <Text className="text-xs text-gray-500">Closet</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/vibes')}>
-          <Text className="text-2xl mb-1">✨</Text>
-          <Text className="text-xs text-gray-500">Vibes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/explore')}>
-          <Text className="text-2xl mb-1">🔍</Text>
-          <Text className="text-xs text-gray-500">Explore</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/profile')}>
-          <Text className="text-2xl mb-1">👤</Text>
-          <Text className="text-xs text-gray-500">Profile</Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Full Image Modal */}
       <Modal
         visible={selectedItem !== null}

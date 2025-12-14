@@ -29,7 +29,7 @@ export default function ProfileScreen() {
     try {
       const user = await AsyncStorage.getItem(USER_STORAGE_KEY);
       if (user) setUsername(user.split('@')[0]);
-      
+
       const items = await AsyncStorage.getItem(CLOTHING_STORAGE_KEY);
       if (items) setClothingItems(JSON.parse(items));
     } catch (error) {
@@ -108,26 +108,6 @@ export default function ProfileScreen() {
       >
         <Text className="text-white text-2xl">+</Text>
       </TouchableOpacity>
-
-      {/* Bottom Navigation */}
-      <View className="flex-row justify-around items-center py-3 pb-7 bg-white border-t border-gray-200">
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/wardrobe')}>
-          <Text className="text-2xl mb-1">👕</Text>
-          <Text className="text-xs text-gray-500">Closet</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/vibes')}>
-          <Text className="text-2xl mb-1">✨</Text>
-          <Text className="text-xs text-gray-500">Vibes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/explore')}>
-          <Text className="text-2xl mb-1">🔍</Text>
-          <Text className="text-xs text-gray-500">Explore</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2">
-          <Text className="text-2xl mb-1">👤</Text>
-          <Text className="text-xs text-gray-500">Profile</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }

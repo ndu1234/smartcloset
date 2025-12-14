@@ -44,9 +44,9 @@ export default function ExploreScreen() {
 
   const filteredUsers = searchQuery
     ? suggestedUsers.filter(u =>
-        u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.handle.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.handle.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : suggestedUsers;
 
   const handleFollow = (userId: string) => {
@@ -62,7 +62,7 @@ export default function ExploreScreen() {
       {/* Header */}
       <View className="px-4 pt-14 pb-3">
         <Text className="text-2xl font-bold text-[#1a1a1a] mb-4">Explore</Text>
-        
+
         {/* Search Bar */}
         <View className="flex-row items-center">
           <View className="flex-1 flex-row items-center bg-gray-100 rounded-xl px-4 py-3">
@@ -118,16 +118,14 @@ export default function ExploreScreen() {
                   <Text className="text-sm text-gray-500">{user.handle} • {user.itemCount} items</Text>
                 </View>
                 <TouchableOpacity
-                  className={`px-5 py-2 rounded-lg ${
-                    followingUsers.includes(user.id)
+                  className={`px-5 py-2 rounded-lg ${followingUsers.includes(user.id)
                       ? 'bg-white border border-gray-300'
                       : 'bg-[#3897f0]'
-                  }`}
+                    }`}
                   onPress={() => handleFollow(user.id)}
                 >
-                  <Text className={`text-sm font-semibold ${
-                    followingUsers.includes(user.id) ? 'text-[#1a1a1a]' : 'text-white'
-                  }`}>
+                  <Text className={`text-sm font-semibold ${followingUsers.includes(user.id) ? 'text-[#1a1a1a]' : 'text-white'
+                    }`}>
                     {followingUsers.includes(user.id) ? 'Following' : 'Follow'}
                   </Text>
                 </TouchableOpacity>
@@ -150,26 +148,6 @@ export default function ExploreScreen() {
           </View>
         </ScrollView>
       )}
-
-      {/* Bottom Navigation */}
-      <View className="flex-row justify-around items-center py-3 pb-7 bg-white border-t border-gray-200">
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/wardrobe')}>
-          <Text className="text-2xl mb-1">👕</Text>
-          <Text className="text-xs text-gray-500">Closet</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/vibes')}>
-          <Text className="text-2xl mb-1">✨</Text>
-          <Text className="text-xs text-gray-500">Vibes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2">
-          <Text className="text-2xl mb-1">🔍</Text>
-          <Text className="text-xs text-gray-500">Explore</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="items-center p-2" onPress={() => router.push('/profile')}>
-          <Text className="text-2xl mb-1">👤</Text>
-          <Text className="text-xs text-gray-500">Profile</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
