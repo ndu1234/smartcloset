@@ -77,7 +77,7 @@ export default function WardrobeScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#f8f8f8]">
+    <View className="bg-[#f8f8f8]">
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 pt-14 pb-3">
         <TouchableOpacity className="p-2" onPress={() => router.push('/add-clothing')}>
@@ -110,9 +110,9 @@ export default function WardrobeScreen() {
       </ScrollView>
 
       {/* Content */}
-      <ScrollView className="flex-1 px-4" contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView className="flex h-full px-4 py-48">
         {filteredItems.length === 0 ? (
-          <View className="flex-1 justify-center items-center py-20">
+          <View className="flex flex-col justify-center items-center">
             <Text className="text-5xl mb-4">👗</Text>
             <Text className="text-xl font-semibold text-[#1a1a1a] mb-2">No items yet</Text>
             <Text className="text-gray-500 mb-6">Add some clothes to your closet</Text>
