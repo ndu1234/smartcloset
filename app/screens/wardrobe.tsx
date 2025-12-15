@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, ScrollView, Modal, Dimensions, Ale
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Sharing from 'expo-sharing';
+import { useTheme } from '@/lib/ThemeContext';
 
 const CLOTHING_STORAGE_KEY = '@smartcloset_clothing';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -15,16 +16,35 @@ type ClothingItem = {
   style?: string;
 };
 
-const filters = ['All', 'Tops', 'Bottoms', 'Shoes', 'Outerwear'];
+type CategoryConfig = {
+  title: string;
+  key: string;
+  filters: string[];
+};
+
+const categories: CategoryConfig[] = [
+  { title: 'Top Wear', key: 'Tops', filters: ['All', 'Shirt', 'Jacket', 'Hoddie', 'Denim'] },
+  { title: 'Bottom Wear', key: 'Bottoms', filters: ['All', 'Chinos', 'Baggie', 'Trouser', 'Denim'] },
+  { title: 'Accessories', key: 'Accessories', filters: ['All', 'Watch', 'Wallet', 'Chains', 'Denim'] },
+  { title: 'Shoes', key: 'Shoes', filters: ['All', 'Sneakers', 'Boots', 'Loafers', 'Sandals'] },
+  { title: 'Outerwear', key: 'Outerwear', filters: ['All', 'Jacket', 'Coat', 'Blazer', 'Vest'] },
+];
 
 export default function WardrobeScreen() {
   const router = useRouter();
+  const { colors, isDark } = useTheme();
   const [clothingItems, setClothingItems] = useState<ClothingItem[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string }>({});
   const [selectedItem, setSelectedItem] = useState<ClothingItem | null>(null);
 
   useEffect(() => {
     loadClothingItems();
+    // Initialize filters
+    const initialFilters: { [key: string]: string } = {};
+    categories.forEach(cat => {
+      initialFilters[cat.key] = 'All';
+    });
+    setSelectedFilters(initialFilters);
   }, []);
 
   const loadClothingItems = async () => {
@@ -38,9 +58,9 @@ export default function WardrobeScreen() {
     }
   };
 
-  const filteredItems = selectedFilter === 'All'
-    ? clothingItems
-    : clothingItems.filter(item => item.category === selectedFilter);
+  const getItemsByCategory = (categoryKey: string) => {
+    return clothingItems.filter(item => item.category === categoryKey);
+  };
 
   const handleShare = async () => {
     if (!selectedItem) return;
@@ -56,17 +76,37 @@ export default function WardrobeScreen() {
     }
   };
 
-  const handleDelete = () => {
+  const handleDeleteItem = (item: ClothingItem) => {
     Alert.alert(
       'Delete Item',
-      `Are you sure you want to delete "${selectedItem?.name}"?`,
+      `Are you sure you want to delete "${item.name}"?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            const newItems = clothingItems.filter(item => item.id !== selectedItem?.id);
+            const newItems = clothingItems.filter(i => i.id !== item.id);
+            setClothingItems(newItems);
+            await AsyncStorage.setItem(CLOTHING_STORAGE_KEY, JSON.stringify(newItems));
+          }
+        }
+      ]
+    );
+  };
+
+  const handleDeleteFromModal = () => {
+    if (!selectedItem) return;
+    Alert.alert(
+      'Delete Item',
+      `Are you sure you want to delete "${selectedItem.name}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const newItems = clothingItems.filter(item => item.id !== selectedItem.id);
             setClothingItems(newItems);
             await AsyncStorage.setItem(CLOTHING_STORAGE_KEY, JSON.stringify(newItems));
             setSelectedItem(null);
@@ -76,69 +116,106 @@ export default function WardrobeScreen() {
     );
   };
 
-  return (
-    <View className="bg-[#f8f8f8]">
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-4 pt-14 pb-3">
-        <TouchableOpacity className="p-2" onPress={() => router.push('/screens/add-clothing')}>
-          <Text className="text-3xl text-[#1a1a1a]">‹</Text>
-        </TouchableOpacity>
-        <Text className="text-lg font-semibold text-[#1a1a1a]">Closet</Text>
-        <TouchableOpacity className="p-2">
-          <Text className="text-[#1a1a1a]">•••</Text>
-        </TouchableOpacity>
-      </View>
+  const renderCategorySection = (category: CategoryConfig) => {
+    const items = getItemsByCategory(category.key);
+    const currentFilter = selectedFilters[category.key] || 'All';
 
-      {/* Filter Tabs */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-4 mb-4">
-        <View className="flex-row gap-2">
-          {filters.map((filter) => (
-            <TouchableOpacity
-              key={filter}
-              className="px-4 py-2"
-              onPress={() => setSelectedFilter(filter)}
-            >
-              <Text className={`text-base ${selectedFilter === filter ? 'text-[#1a1a1a] font-semibold' : 'text-gray-400'}`}>
-                {filter}
-              </Text>
-              {selectedFilter === filter && (
-                <View className="h-0.5 bg-[#1a1a1a] mt-1 rounded-full" />
-              )}
-            </TouchableOpacity>
-          ))}
+    return (
+      <View key={category.key} className="mb-6">
+        {/* Section Header */}
+        <View className="flex-row items-center justify-between px-4 mb-3">
+          <Text style={{ color: colors.text }} className="text-lg font-bold">{category.title}</Text>
+          <TouchableOpacity>
+            <Text style={{ color: colors.textSecondary }} className="text-xl">⊞</Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
 
-      {/* Content */}
-      <ScrollView className="flex h-full px-4 py-48">
-        {filteredItems.length === 0 ? (
-          <View className="flex flex-col justify-center items-center">
-            <Text className="text-5xl mb-4">👗</Text>
-            <Text className="text-xl font-semibold text-[#1a1a1a] mb-2">No items yet</Text>
-            <Text className="text-gray-500 mb-6">Add some clothes to your closet</Text>
-            <TouchableOpacity
-              className="bg-[#1a1a1a] px-8 py-3 rounded-full"
-              onPress={() => router.push('/screens/add-clothing')}
-            >
-              <Text className="text-white font-semibold">+ Add Item</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View className="flex-row flex-wrap justify-between">
-            {filteredItems.map((item) => (
+        {/* Filter Chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-4 mb-3">
+          <View className="flex-row gap-2">
+            {category.filters.map((filter) => (
               <TouchableOpacity
-                key={item.id}
-                className="w-[48%] mb-4"
-                onPress={() => setSelectedItem(item)}
+                key={filter}
+                style={{ 
+                  borderColor: currentFilter === filter ? colors.text : colors.border 
+                }}
+                className="px-4 py-2 rounded-full border"
+                onPress={() => setSelectedFilters(prev => ({ ...prev, [category.key]: filter }))}
               >
-                <View className="bg-gray-100 rounded-xl overflow-hidden aspect-square mb-2">
-                  <Image source={{ uri: item.image }} className="w-full h-full" resizeMode="cover" />
-                </View>
-                <Text className="text-sm font-medium text-[#1a1a1a]">{item.name}</Text>
+                <Text style={{ 
+                  color: currentFilter === filter ? colors.text : colors.textSecondary 
+                }} className={`text-sm ${currentFilter === filter ? 'font-medium' : ''}`}>
+                  {filter}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
-        )}
+        </ScrollView>
+
+        {/* Items Row */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-4">
+          <View className="flex-row gap-3">
+            {/* New Item Card */}
+            <TouchableOpacity
+              style={{ backgroundColor: colors.card }}
+              className="w-40 h-48 rounded-2xl border-2 border-[#c4a484] border-dashed justify-center items-center"
+              onPress={() => router.push('/screens/add-clothing')}
+            >
+              <View className="w-12 h-12 rounded-full border-2 border-[#c4a484] justify-center items-center mb-2">
+                <Text className="text-[#c4a484] text-2xl">+</Text>
+              </View>
+              <Text className="text-[#c4a484] text-sm font-medium">New Item</Text>
+            </TouchableOpacity>
+
+            {/* Clothing Items */}
+            {items.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={{ backgroundColor: isDark ? '#2a2a2a' : '#ffffff' }}
+                className="w-40 h-48 rounded-2xl overflow-hidden"
+                onPress={() => setSelectedItem(item)}
+              >
+                <View className="flex-1">
+                  <Image 
+                    source={{ uri: item.image }} 
+                    className="w-full h-full" 
+                    resizeMode="contain" 
+                  />
+                </View>
+                {/* Delete Button */}
+                <TouchableOpacity
+                  style={{ backgroundColor: isDark ? '#3a3a3a' : '#ffffff' }}
+                  className="absolute bottom-2 right-2 w-8 h-8 rounded-lg justify-center items-center shadow-sm"
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    handleDeleteItem(item);
+                  }}
+                >
+                  <Text style={{ color: colors.textSecondary }}>🗑</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
+      </View>
+    );
+  };
+
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-4 pt-14 pb-4">
+        <TouchableOpacity className="p-2" onPress={() => router.back()}>
+          <Text style={{ color: colors.text }} className="text-2xl">‹</Text>
+        </TouchableOpacity>
+        <Text style={{ color: colors.text }} className="text-lg font-semibold">My Wardrobe</Text>
+        <View className="w-10" />
+      </View>
+
+      {/* Content */}
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {categories.map(renderCategorySection)}
+        <View className="h-24" />
       </ScrollView>
 
       {/* Full Image Modal */}
@@ -192,7 +269,7 @@ export default function WardrobeScreen() {
                 <Text className="text-lg">📤</Text>
                 <Text className="text-white font-semibold">Share</Text>
               </TouchableOpacity>
-              <TouchableOpacity className="flex-row items-center bg-red-500/90 px-6 py-3 rounded-full gap-2" onPress={handleDelete}>
+              <TouchableOpacity className="flex-row items-center bg-red-500/90 px-6 py-3 rounded-full gap-2" onPress={handleDeleteFromModal}>
                 <Text className="text-lg">🗑️</Text>
                 <Text className="text-white font-semibold">Delete</Text>
               </TouchableOpacity>

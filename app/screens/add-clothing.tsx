@@ -3,18 +3,24 @@ import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Alert } fro
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '@/lib/ThemeContext';
 
 const CLOTHING_STORAGE_KEY = '@smartcloset_clothing';
 
 const categories = ['Tops', 'Bottoms', 'Shoes', 'Outerwear', 'Accessories'];
 const styles = ['Casual', 'Formal', 'Sporty', 'Streetwear', 'Vintage'];
+const warmthLevels = ['Light', 'Medium', 'Heavy'];
+const weatherTypes = ['All Weather', 'Rain-proof', 'Windproof', 'Summer Only', 'Winter Only'];
 
 export default function AddClothingScreen() {
   const router = useRouter();
+  const { colors, isDark } = useTheme();
   const [image, setImage] = useState<string | null>(null);
   const [itemName, setItemName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('');
+  const [selectedWarmth, setSelectedWarmth] = useState('');
+  const [selectedWeather, setSelectedWeather] = useState('');
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -25,8 +31,7 @@ export default function AddClothingScreen() {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 0.8,
     });
 
@@ -43,8 +48,7 @@ export default function AddClothingScreen() {
     }
 
     const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: false,
       quality: 0.8,
     });
 
@@ -69,6 +73,8 @@ export default function AddClothingScreen() {
         image,
         category: selectedCategory,
         style: selectedStyle,
+        warmth: selectedWarmth,
+        weather: selectedWeather,
       };
 
       items.push(newItem);
@@ -82,13 +88,13 @@ export default function AddClothingScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#f8f8f8]">
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 pt-14 pb-3">
         <TouchableOpacity className="p-2" onPress={() => router.back()}>
-          <Text className="text-3xl text-[#1a1a1a]">‹</Text>
+          <Text style={{ color: colors.text }} className="text-3xl">‹</Text>
         </TouchableOpacity>
-        <Text className="text-lg font-semibold text-[#1a1a1a]">Item Details</Text>
+        <Text style={{ color: colors.text }} className="text-lg font-semibold">Item Details</Text>
         <TouchableOpacity onPress={handleSave}>
           <Text className="text-base font-semibold text-[#4CAF50]">Save</Text>
         </TouchableOpacity>
@@ -97,7 +103,8 @@ export default function AddClothingScreen() {
       <ScrollView className="flex-1 px-4" keyboardDismissMode="on-drag">
         {/* Image Picker */}
         <TouchableOpacity
-          className="bg-gray-100 rounded-2xl h-72 justify-center items-center mb-6 overflow-hidden"
+          style={{ backgroundColor: colors.card }}
+          className="rounded-2xl h-72 justify-center items-center mb-6 overflow-hidden"
           onPress={pickImage}
         >
           {image ? (
@@ -105,7 +112,7 @@ export default function AddClothingScreen() {
           ) : (
             <View className="items-center">
               <Text className="text-5xl mb-3">📷</Text>
-              <Text className="text-gray-500 text-base">Tap to add photo</Text>
+              <Text style={{ color: colors.textSecondary }} className="text-base">Tap to add photo</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -113,42 +120,54 @@ export default function AddClothingScreen() {
         {/* Camera/Gallery Buttons */}
         <View className="flex-row gap-3 mb-6">
           <TouchableOpacity
-            className="flex-1 bg-white border border-gray-200 py-3 rounded-xl"
+            style={{ backgroundColor: colors.card, borderColor: colors.border }}
+            className="flex-1 border py-3 rounded-xl"
             onPress={takePhoto}
           >
-            <Text className="text-center text-[#1a1a1a]">📸 Camera</Text>
+            <Text style={{ color: colors.text }} className="text-center">📸 Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="flex-1 bg-white border border-gray-200 py-3 rounded-xl"
+            style={{ backgroundColor: colors.card, borderColor: colors.border }}
+            className="flex-1 border py-3 rounded-xl"
             onPress={pickImage}
           >
-            <Text className="text-center text-[#1a1a1a]">🖼️ Gallery</Text>
+            <Text style={{ color: colors.text }} className="text-center">🖼️ Gallery</Text>
           </TouchableOpacity>
         </View>
 
         {/* Item Name */}
-        <Text className="text-sm font-medium text-[#1a1a1a] mb-2">Item Name</Text>
+        <Text style={{ color: colors.text }} className="text-sm font-medium mb-2">Item Name</Text>
         <TextInput
-          className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-base text-[#1a1a1a] mb-6"
+          style={{ backgroundColor: colors.card, borderColor: colors.border, color: colors.text }}
+          className="border rounded-xl px-4 py-4 text-base mb-6"
           placeholder="e.g., Blue Denim Jacket"
-          placeholderTextColor="#999"
+          placeholderTextColor={colors.textSecondary}
           value={itemName}
           onChangeText={setItemName}
         />
 
         {/* Category */}
-        <Text className="text-sm font-medium text-[#1a1a1a] mb-3">Category</Text>
+        <Text style={{ color: colors.text }} className="text-sm font-medium mb-3">Category</Text>
         <View className="flex-row flex-wrap gap-2 mb-6">
           {categories.map((cat) => (
             <TouchableOpacity
               key={cat}
-              className={`px-4 py-2 rounded-full border ${selectedCategory === cat
-                ? 'bg-[#1a1a1a] border-[#1a1a1a]'
-                : 'bg-white border-gray-200'
-                }`}
+              style={{
+                backgroundColor: selectedCategory === cat 
+                  ? (isDark ? '#ffffff' : '#1a1a1a')
+                  : colors.card,
+                borderColor: selectedCategory === cat
+                  ? (isDark ? '#ffffff' : '#1a1a1a')
+                  : colors.border
+              }}
+              className="px-4 py-2 rounded-full border"
               onPress={() => setSelectedCategory(cat)}
             >
-              <Text className={selectedCategory === cat ? 'text-white' : 'text-[#1a1a1a]'}>
+              <Text style={{
+                color: selectedCategory === cat
+                  ? (isDark ? '#1a1a1a' : '#ffffff')
+                  : colors.text
+              }}>
                 {cat}
               </Text>
             </TouchableOpacity>
@@ -156,19 +175,80 @@ export default function AddClothingScreen() {
         </View>
 
         {/* Style */}
-        <Text className="text-sm font-medium text-[#1a1a1a] mb-3">Style</Text>
-        <View className="flex-row flex-wrap gap-2 mb-8">
+        <Text style={{ color: colors.text }} className="text-sm font-medium mb-3">Style</Text>
+        <View className="flex-row flex-wrap gap-2 mb-6">
           {styles.map((style) => (
             <TouchableOpacity
               key={style}
-              className={`px-4 py-2 rounded-full border ${selectedStyle === style
-                ? 'bg-[#1a1a1a] border-[#1a1a1a]'
-                : 'bg-white border-gray-200'
-                }`}
+              style={{
+                backgroundColor: selectedStyle === style 
+                  ? (isDark ? '#ffffff' : '#1a1a1a')
+                  : colors.card,
+                borderColor: selectedStyle === style
+                  ? (isDark ? '#ffffff' : '#1a1a1a')
+                  : colors.border
+              }}
+              className="px-4 py-2 rounded-full border"
               onPress={() => setSelectedStyle(style)}
             >
-              <Text className={selectedStyle === style ? 'text-white' : 'text-[#1a1a1a]'}>
+              <Text style={{
+                color: selectedStyle === style
+                  ? (isDark ? '#1a1a1a' : '#ffffff')
+                  : colors.text
+              }}>
                 {style}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Warmth Level */}
+        <Text style={{ color: colors.text }} className="text-sm font-medium mb-3">Warmth Level 🌡️</Text>
+        <View className="flex-row flex-wrap gap-2 mb-6">
+          {warmthLevels.map((warmth) => (
+            <TouchableOpacity
+              key={warmth}
+              style={{
+                backgroundColor: selectedWarmth === warmth 
+                  ? (warmth === 'Light' ? '#60a5fa' : warmth === 'Medium' ? '#fcd34d' : '#f87171')
+                  : colors.card,
+                borderColor: selectedWarmth === warmth
+                  ? (warmth === 'Light' ? '#60a5fa' : warmth === 'Medium' ? '#fcd34d' : '#f87171')
+                  : colors.border
+              }}
+              className="px-4 py-2 rounded-full border"
+              onPress={() => setSelectedWarmth(warmth)}
+            >
+              <Text style={{
+                color: selectedWarmth === warmth ? '#1a1a1a' : colors.text
+              }}>
+                {warmth === 'Light' ? '❄️ ' : warmth === 'Medium' ? '🌤️ ' : '🔥 '}{warmth}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Weather Suitability */}
+        <Text style={{ color: colors.text }} className="text-sm font-medium mb-3">Weather Suitability ☁️</Text>
+        <View className="flex-row flex-wrap gap-2 mb-8">
+          {weatherTypes.map((weather) => (
+            <TouchableOpacity
+              key={weather}
+              style={{
+                backgroundColor: selectedWeather === weather 
+                  ? '#4CAF50'
+                  : colors.card,
+                borderColor: selectedWeather === weather
+                  ? '#4CAF50'
+                  : colors.border
+              }}
+              className="px-4 py-2 rounded-full border"
+              onPress={() => setSelectedWeather(weather)}
+            >
+              <Text style={{
+                color: selectedWeather === weather ? '#ffffff' : colors.text
+              }}>
+                {weather}
               </Text>
             </TouchableOpacity>
           ))}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Image, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTheme } from '@/lib/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const GRID_GAP = 2;
@@ -38,6 +39,7 @@ const suggestedUsers: User[] = [
 
 export default function ExploreScreen() {
   const router = useRouter();
+  const { colors, isDark } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [followingUsers, setFollowingUsers] = useState<string[]>([]);
@@ -58,26 +60,27 @@ export default function ExploreScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#f8f8f8]">
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
       <View className="px-4 pt-14 pb-3">
-        <Text className="text-2xl font-bold text-[#1a1a1a] mb-4">Explore</Text>
+        <Text style={{ color: colors.text }} className="text-2xl font-bold mb-4">Explore</Text>
 
         {/* Search Bar */}
         <View className="flex-row items-center">
-          <View className="flex-1 flex-row items-center bg-gray-100 rounded-xl px-4 py-3">
-            <Text className="text-gray-400 mr-2">🔍</Text>
+          <View style={{ backgroundColor: colors.card }} className="flex-1 flex-row items-center rounded-xl px-4 py-3">
+            <Text style={{ color: colors.textSecondary }} className="mr-2">🔍</Text>
             <TextInput
-              className="flex-1 text-base text-[#1a1a1a]"
+              style={{ color: colors.text }}
+              className="flex-1 text-base"
               placeholder="Search users..."
-              placeholderTextColor="#999"
+              placeholderTextColor={colors.textSecondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
               onFocus={() => setIsSearchFocused(true)}
             />
             {searchQuery && (
               <TouchableOpacity onPress={() => setSearchQuery('')}>
-                <Text className="text-gray-400">✕</Text>
+                <Text style={{ color: colors.textSecondary }}>✕</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -89,7 +92,7 @@ export default function ExploreScreen() {
                 setIsSearchFocused(false);
               }}
             >
-              <Text className="text-[#1a1a1a]">Cancel</Text>
+              <Text style={{ color: colors.text }}>Cancel</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -97,9 +100,9 @@ export default function ExploreScreen() {
 
       {isSearchFocused ? (
         /* Search Mode - Show Users */
-        <ScrollView className="flex-1 bg-white" keyboardDismissMode="on-drag">
+        <ScrollView style={{ backgroundColor: colors.background }} className="flex-1" keyboardDismissMode="on-drag">
           <View className="px-4 pt-4">
-            <Text className="text-base font-semibold text-[#1a1a1a] mb-3">
+            <Text style={{ color: colors.text }} className="text-base font-semibold mb-3">
               {searchQuery ? 'Results' : 'Suggested'}
             </Text>
             {filteredUsers.map((user) => (
@@ -107,25 +110,26 @@ export default function ExploreScreen() {
                 key={user.id}
                 className="flex-row items-center py-3"
                 onPress={() => {
-                  // Could navigate to user profile
+                  router.push({ pathname: '/screens/user-profile', params: { userId: user.id } });
                 }}
               >
-                <View className="w-11 h-11 rounded-full bg-gray-200 justify-center items-center mr-3">
-                  <Text className="text-lg font-semibold">{user.name.charAt(0)}</Text>
+                <View style={{ backgroundColor: colors.card }} className="w-11 h-11 rounded-full justify-center items-center mr-3">
+                  <Text style={{ color: colors.text }} className="text-lg font-semibold">{user.name.charAt(0)}</Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-base font-semibold text-[#1a1a1a]">{user.name}</Text>
-                  <Text className="text-sm text-gray-500">{user.handle} • {user.itemCount} items</Text>
+                  <Text style={{ color: colors.text }} className="text-base font-semibold">{user.name}</Text>
+                  <Text style={{ color: colors.textSecondary }} className="text-sm">{user.handle} • {user.itemCount} items</Text>
                 </View>
                 <TouchableOpacity
-                  className={`px-5 py-2 rounded-lg ${followingUsers.includes(user.id)
-                      ? 'bg-white border border-gray-300'
-                      : 'bg-[#3897f0]'
-                    }`}
+                  style={{ 
+                    backgroundColor: followingUsers.includes(user.id) ? 'transparent' : '#3897f0',
+                    borderColor: colors.border,
+                    borderWidth: followingUsers.includes(user.id) ? 1 : 0
+                  }}
+                  className="px-5 py-2 rounded-lg"
                   onPress={() => handleFollow(user.id)}
                 >
-                  <Text className={`text-sm font-semibold ${followingUsers.includes(user.id) ? 'text-[#1a1a1a]' : 'text-white'
-                    }`}>
+                  <Text style={{ color: followingUsers.includes(user.id) ? colors.text : '#ffffff' }} className="text-sm font-semibold">
                     {followingUsers.includes(user.id) ? 'Following' : 'Follow'}
                   </Text>
                 </TouchableOpacity>
